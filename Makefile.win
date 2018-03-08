@@ -1,0 +1,42 @@
+# Project: nyx
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = Release/nyx_private.res
+OBJ  = Release/k_socket.o Release/k_user.o Release/main.o Release/settings.o $(RES)
+LINKOBJ  = Release/k_socket.o Release/k_user.o Release/main.o Release/settings.o $(RES)
+LIBS =  -L"D:/Dev-Cpp/lib" D:/Dev-Cpp/lib/libws2_32.a  -fmessage-length=0 -s -march=pentiumpro -msse2 
+INCS =  -I"D:/Dev-Cpp/include" 
+CXXINCS =  -I"D:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"D:/Dev-Cpp/include/c++/3.4.2/backward"  -I"D:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"D:/Dev-Cpp/include/c++/3.4.2"  -I"D:/Dev-Cpp/include" 
+BIN  = ../nyx.exe
+CXXFLAGS = $(CXXINCS)   -traditional-cpp -fexpensive-optimizations -O3 -fmessage-length=0 -march=pentiumpro -msse2
+CFLAGS = $(INCS)   -traditional-cpp -fexpensive-optimizations -O3 -fmessage-length=0 -march=pentiumpro -msse2
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ../nyx.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "..\nyx.exe" $(LIBS)
+
+Release/k_socket.o: k_socket.cpp
+	$(CPP) -c k_socket.cpp -o Release/k_socket.o $(CXXFLAGS)
+
+Release/k_user.o: k_user.cpp
+	$(CPP) -c k_user.cpp -o Release/k_user.o $(CXXFLAGS)
+
+Release/main.o: main.cpp
+	$(CPP) -c main.cpp -o Release/main.o $(CXXFLAGS)
+
+Release/settings.o: settings.cpp
+	$(CPP) -c settings.cpp -o Release/settings.o $(CXXFLAGS)
+
+Release/nyx_private.res: nyx_private.rc 
+	$(WINDRES) -i nyx_private.rc --input-format=rc -o Release/nyx_private.res -O coff 

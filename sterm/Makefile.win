@@ -1,0 +1,33 @@
+# Project: sterm
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = 
+OBJ  = main.o k_socket.o $(RES)
+LINKOBJ  = main.o k_socket.o $(RES)
+LIBS =  -L"D:/Dev-Cpp/lib" D:/Dev-Cpp/lib/libws2_32.a  -fmessage-length=0 -s -march=pentium3 -mmmx 
+INCS =  -I"D:/Dev-Cpp/include" 
+CXXINCS =  -I"D:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"D:/Dev-Cpp/include/c++/3.4.2/backward"  -I"D:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"D:/Dev-Cpp/include/c++/3.4.2"  -I"D:/Dev-Cpp/include" 
+BIN  = sterm.exe
+CXXFLAGS = $(CXXINCS)   -fexpensive-optimizations -O3 -fmessage-length=0 -march=pentium3 -mmmx
+CFLAGS = $(INCS)   -fexpensive-optimizations -O3 -fmessage-length=0 -march=pentium3 -mmmx
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before sterm.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "sterm.exe" $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+k_socket.o: k_socket.cpp
+	$(CPP) -c k_socket.cpp -o k_socket.o $(CXXFLAGS)

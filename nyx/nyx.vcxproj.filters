@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="nSTL">
+      <UniqueIdentifier>{1d78b351-51a6-4347-ae19-20e54e38f91a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Kaillera">
+      <UniqueIdentifier>{291b293b-dd78-4aea-b34b-0bb2ae23a839}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\dlist.nstl">
+      <Filter>nSTL</Filter>
+    </None>
+    <None Include="..\odlist.nstl">
+      <Filter>nSTL</Filter>
+    </None>
+    <None Include="..\oslist.nstl">
+      <Filter>nSTL</Filter>
+    </None>
+    <None Include="..\slist.nstl">
+      <Filter>nSTL</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\nSTL.h">
+      <Filter>nSTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\k_frame.h">
+      <Filter>Kaillera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\k_instruction.h">
+      <Filter>Kaillera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\k_message.h">
+      <Filter>Kaillera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\k_socket.h">
+      <Filter>Kaillera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\k_user.h">
+      <Filter>Kaillera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\settings.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\k_socket.cpp">
+      <Filter>Kaillera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\k_user.cpp">
+      <Filter>Kaillera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\settings.cpp" />
+  </ItemGroup>
+</Project>

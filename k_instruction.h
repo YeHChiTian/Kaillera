@@ -47,17 +47,30 @@ typedef enum INSTRUCTION{
 #define INSTRUCTION_LOGNSTAT LOGNSTAT
 #define INSTRUCTION_MOTDCHAT MOTDLINE
 #define MSTR(X) #X
+
+//内存字节对齐，将当前默认字节入栈，并且将1设置为pack_value默认对齐字节。
 #pragma pack(push, 1)
+//当前栈顶record（pack_value）为新的packing alignment数值
 #pragma pack(pop)
+
+
+//Programs that use intrinsic functions are faster because they do not have the overhead of function calls 
+//but may be larger due to the additional code generated.
+
+//指定参数列表中的函数为内建函数
+//The compiler may call the function and not replace the function call with inline instructions, if it will result in better performance.
 #pragma intrinsic(memcmp, memcpy, memset, strcat, strcmp, strcpy, strlen)
-class k_instruction {
+
+class k_instruction 
+{
 public:
 	INSTRUCTION type: 8;
     char user[32];
 	char * buffer;
     unsigned int buffer_len;
     unsigned int buffer_pos;
-    k_instruction(){
+    k_instruction()
+	{
         type = INVDNONE;
         user[0] = 0;
         buffer_pos = 0;
@@ -65,10 +78,12 @@ public:
         buffer = (char*)malloc(buffer_len);
         *buffer = 0x00;
     }
-    ~k_instruction(){
+    ~k_instruction()
+	{
         free (buffer);
     }
-    void clone(k_instruction * arg_0){
+    void clone(k_instruction * arg_0)
+	{
         type = arg_0->type;
         strcpy(user, arg_0->user);
         buffer_len = arg_0->buffer_len;
@@ -76,31 +91,39 @@ public:
         memcpy(buffer, arg_0->buffer, buffer_len);
         buffer_pos = arg_0->buffer_pos;
     }
-    void ensure_sized(unsigned int arg_0){
-        if (arg_0 > buffer_len) {
+    void ensure_sized(unsigned int arg_0)
+	{
+        if (arg_0 > buffer_len) 
+		{
             for (;buffer_len < arg_0; buffer_len*=2);
             buffer = (char*)realloc(buffer, buffer_len);
         }
     }
-    void set_username(char * arg_0){
+    void set_username(char * arg_0)
+	{
         int p;
         strncpy(user, arg_0, (p=min((int)strlen(arg_0), 31)));
         user[p] = 0x00;
     }
-    void store_bytes(const void * arg_0, int arg_4){
+    void store_bytes(const void * arg_0, int arg_4)
+	{
         ensure_sized(buffer_pos+arg_4);
         memcpy(buffer+buffer_pos, arg_0, arg_4);
         buffer_pos += arg_4;
     }
-    void load_bytes(void * arg_0, unsigned int arg_4){
-        if (buffer_pos != 0) {
+	//从buffer中加载内容到arg_0,并且buffer自身减去arg0
+    void load_bytes(void * arg_0, unsigned int arg_4)
+	{
+        if (buffer_pos != 0) 
+		{
             int p = min(arg_4, buffer_pos);
             memcpy(arg_0, buffer, p);
             buffer_pos -= p;
             memcpy(buffer, buffer+p, buffer_pos);
         }
     }
-    void store_string(const char * arg_0){
+    void store_string(const char * arg_0)
+	{
         store_bytes(arg_0, (int)strlen(arg_0)+1);
     }
     void load_str(char * arg_0, unsigned int arg_4){
@@ -109,30 +132,37 @@ public:
 		load_bytes(arg_0, arg_4);
 		arg_0[arg_4] = 0x00;
     }
-    void store_int(const int x){
+    void store_int(const int x)
+	{
         store_bytes(&x, 4);
     }
-	int load_int(){
+	int load_int()
+	{
         int x;
         load_bytes(&x,4);
         return x;
     }
-    void store_short(const short x){
+    void store_short(const short x)
+	{
         store_bytes(&x, 2);
     }
-    void store_char(const char x){
+    void store_char(const char x)
+	{
         store_bytes(&x, 1);
     }
-    unsigned char load_char(){
+    unsigned char load_char()
+	{
         unsigned char x;
         load_bytes(&x,1);
         return x;
     }
-    short load_short(){
+    short load_short()
+	{
         short x;
         load_bytes(&x,2);
         return x;
     }
+	//将type，user，buffer信息写入到arg_0, 然后返回实际写入的长度
     int write_to_message(char * arg_0, const unsigned int max_len){
         *arg_0 = type;
 		int eax = (int)strlen(user) + 2;
@@ -141,7 +171,9 @@ public:
         memcpy(arg_0 + eax, buffer, ebx = min(max_len - eax, buffer_pos));
 		return eax + ebx;
     }
-    void read_from_message(char * p_buffer, int p_buffer_len){
+	//将数据p_buffer写入到buffer中（包含type）
+    void read_from_message(char * p_buffer, int p_buffer_len)
+	{
         type = *(INSTRUCTION*)p_buffer++;
 		
 		unsigned int ul = (int)strlen(p_buffer);
@@ -157,8 +189,10 @@ public:
         memcpy(buffer, p_buffer, p_buffer_len);
 		buffer_pos = p_buffer_len;
     }
-	char* to_string(char *buf){
-		char * INSTRUCTION_STR[] = {
+	//包含了type, user, buffer_len,xxx
+	char* to_string(char *buf)
+	{
+		char * INSTRUCTION_STR[] ={
 			MSTR(CLNTSKIP),
 				MSTR(USERLEAV),
 				MSTR(USERJOIN),

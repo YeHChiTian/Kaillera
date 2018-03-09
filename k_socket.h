@@ -50,21 +50,24 @@ public:
     bool has_data_waiting;
     sockaddr_in addr;
     static slist<k_socket*, FD_SETSIZE> list;
-    static SOCKET ndfs;
-    static fd_set sockets;   // 描述符集 这个将用来测试有没有一个可用的连接
+    static SOCKET ndfs;      //select 最大的描述符号
+    static fd_set sockets;   //描述符集 这个将用来测试有没有一个可用的连接
     static fd_set temp;
 public:
-    k_socket(){
+    k_socket()
+	{
         sock = 0;
         list.add(this);
         has_data_waiting = false;
-        if(ndfs == 0) {
+        if(ndfs == 0) 
+		{
             FD_ZERO(&sockets);
             FD_ZERO(&temp);
         }
         port = 0;
     }
-    ~k_socket(){
+    ~k_socket()
+	{
         close();
     }
     virtual int clone(k_socket * remote){
@@ -169,7 +172,8 @@ public:
     virtual bool set_aport(int port){
         return ((addr.sin_port = htons(port)) != 0);
     }
-    virtual bool send(char * buf, int len){
+    virtual bool send(char * buf, int len)
+	{
         return (sendto(sock, buf, len, 0, (sockaddr*)&addr, 16) == -1 );
     }
     virtual int check_recv (char* buf, int * len, bool leave_in_queue, sockaddr_in* addrp)  {

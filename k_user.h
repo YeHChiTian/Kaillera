@@ -24,7 +24,8 @@ extern void __cdecl kprintf(char * arg_0, ...);
 class k_user {
 
 public:
-	class k_userlist: public dlist<k_user*> {
+	class k_userlist: public dlist<k_user*> 
+	{
 	public:
 		unsigned int time_;
 		void step();

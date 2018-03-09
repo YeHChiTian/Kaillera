@@ -11,21 +11,26 @@
 
 #pragma pack(push, 1)
 
-typedef struct {
+
+//4个字节
+typedef struct 
+{
     unsigned short serial;
     unsigned short length;
 } k_instruction_head;
 
 
 #pragma pack(pop)
-
-typedef struct {
+//sizeof(k_instruction_ptr) == 8,
+typedef struct 
+{
     k_instruction_head head;
     char * body;
 } k_instruction_ptr; 
 
 
-class k_message : public k_socket {
+class k_message : public k_socket
+{
     unsigned short      last_sent_instruction;
     unsigned short      last_processed_instruction;
     k_instruction_ptr   out_cache[256];
@@ -34,7 +39,8 @@ class k_message : public k_socket {
     int                 in_cache_length;
     int                 default_ipm;
 public:
-    k_message(){
+    k_message()
+	{
         k_socket();
         out_cache_len = 0;
         in_cache_length = 0;
@@ -42,28 +48,40 @@ public:
         last_processed_instruction = 0;
         default_ipm = 3;
     }
-    ~k_message(){
+    ~k_message()
+	{
         close();
     }
-    void close(){
-        for (int i = 0; i < in_cache_length; i++){
+    void close()
+	{
+        for (int i = 0; i < in_cache_length; i++)
+		{
             free(in_cache[i].body);
         }
-        for (int j = 0; j < out_cache_len; j++){
+        for (int j = 0; j < out_cache_len; j++)
+		{
             free(out_cache[j].body);
         }
         k_socket::close();
     }
-    void send_instruction(k_instruction * arg_0){
+	//发送一条指令
+    void send_instruction(k_instruction * arg_0)
+	{
         char temp[32768];
         int l = arg_0->write_to_message(temp, 32767);
         k_message::send(temp, l);
     }
-    bool send(char * buf, int len){
+	//将buf信息保存到out_cache中
+    bool send(char * buf, int len)
+	{
         int vx = last_sent_instruction++;
-        if (out_cache_len > 0) {
-            for (int eax = 0; eax < out_cache_len; eax++){
-                if (out_cache[eax].head.serial == vx) {
+		//对序列last_sent_instruction发送一个default_ipm信息
+        if (out_cache_len > 0) 
+		{
+            for (int eax = 0; eax < out_cache_len; eax++)
+			{
+                if (out_cache[eax].head.serial == vx) 
+				{
 					
                     send_message(default_ipm);
                     return 0;
@@ -71,11 +89,18 @@ public:
             }
         }
         char * xxx;
-        if (out_cache_len == 0x100) {
+		//0x100 = 256d
+        if (out_cache_len == 0x100)
+		{
+			
             xxx = (char *)((len > out_cache[0].head.length) ? realloc(out_cache[0].body, len) : out_cache[0].body);
+
+			//将out_cache上[1,255]移动到[0,254]上。
             memcpy(&out_cache[0], &out_cache[1], 255*8);
             out_cache_len--;
-        } else {
+        }
+		else
+		{
             xxx = (char *) malloc(len);
         }
 		
@@ -87,14 +112,20 @@ public:
         send_message(default_ipm);
         return 0;
     }
-    int send_message(int limit){
+
+	//发送缓冲区out_cache中至少limit条信息，从右往左
+    int send_message(int limit)
+	{
         char buf[0x8000];
         int len = 1;
         char * buff = buf;
         char max_t = min(out_cache_len, limit);
         *buff++ = max_t;
-        if(max_t > 0) {
-            for (int i = 0; i < max_t; i++) {
+		//将max_t条消息，放入到buf中。每条消息内容包含一个完整的out_cache(从右往左)
+        if(max_t > 0)
+		{
+            for (int i = 0; i < max_t; i++)
+			{
                 int cache_index = out_cache_len - i -1;
                 *(k_instruction_head*)buff = out_cache[cache_index].head;
                 buff += 4;
@@ -104,26 +135,36 @@ public:
                 len += l + 4;
             }
         }
+		//向客户端发送消息buf，长度为len.
 		k_socket::send(buf, len);
         
         return 0;
     }
-    int receive_instruction(k_instruction * arg_0, bool leave_in_queue, sockaddr_in* arg_8) {
+
+
+    int receive_instruction(k_instruction * arg_0, bool leave_in_queue, sockaddr_in* arg_8) 
+	{
         char var_8000[0x8000];
         int var_8004 = 0x8000;
-        if (check_recv(var_8000, &var_8004, leave_in_queue, arg_8)==1) {
+        if (check_recv(var_8000, &var_8004, leave_in_queue, arg_8)==1)
+		{
             return 1;
-        } else {
+        } 
+		else 
+		{
             arg_0->read_from_message(var_8000, var_8004);    
             return 0;
         }
     }
-    int check_recv (char* buf, int * len, bool leave_in_queue, sockaddr_in* addrp) {
-        if (in_cache_length <= 0) {
+    int check_recv (char* buf, int * len, bool leave_in_queue, sockaddr_in* addrp) 
+	{
+        if (in_cache_length <= 0)
+		{
             char buff      [0x8000];
             int  bufflen = 0x8000-1;
             memset(buff, 0, 0x8000);
-            if (k_socket::check_recv(buff, &bufflen, false, addrp) == 0) {
+            if (k_socket::check_recv(buff, &bufflen, false, addrp) == 0) 
+			{
                 char instruction_count = *buff;
                 char* ptr = buff + 1;
                 if (instruction_count != 0) {
@@ -184,13 +225,15 @@ public:
         }
         return 1;
     }
-    bool has_data(){
+    bool has_data()
+	{
         if (in_cache_length == 0)
             return has_data_waiting;
         else
             return 1;
     }
-    void resend_message(int limit){
+    void resend_message(int limit)
+	{
         send_message(limit);
     }
 };

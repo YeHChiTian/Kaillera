@@ -30,10 +30,14 @@ public:
 	}
 
 	//add 	adds an element to the list
-	void add(_Type element){
-		if (items == 0) {
+	void add(_Type element)
+	{
+		if (items == 0) 
+		{
 			items = (_Type*)malloc(_MinLen * sizeof(_Type));
-		} else {
+		}
+		else
+		{
 			if (length > _MinLen)
 				items = (_Type*)realloc(items, (length + 1) * sizeof(_Type));
 		}
@@ -41,7 +45,8 @@ public:
 	}
 
 	//remove 	removes an element from the list
-	void remove(int i){
+	void remove(int i)
+	{
 		if (i >= 0 && i < length) {
 			int l = length-1;
 			if (l!=i) {
@@ -54,10 +59,13 @@ public:
 		}
 	}
 
-	void remove(_Type t){
+	void remove(_Type t)
+	{
 		int m = length;
-		for (int i = 0; i < m; i++) {
-			if (items[i] == t) {
+		for (int i = 0; i < m; i++) 
+		{
+			if (items[i] == t)
+			{
 				remove(i);
 				break;
 			}
@@ -65,27 +73,33 @@ public:
 	}
 
 	//set 	sets an element value in the list
-	void set(_Type v, int i){
-		if (i >=0 & i < length) {
+	void set(_Type v, int i)
+	{
+		if (i >=0 & i < length)
+		{
 			items[i] = v;
 		}
 	}
 
 	//get 	gets an element value in the list
-	_Type get(int i){
+	_Type get(int i)
+	{
 		return (i >= 0 && i < length)? items[i] : 0;//_DefValue;
 	}
 
 	//clear 	removes all elements from the list	
-	void clear(){
+	void clear()
+	{
 		length = 0;
-		if (items != 0){
+		if (items != 0)
+		{
 			items = realloc(items, _MinLen * sizeof(_Type));
 		}
 	}
 
 	//size 	returns the number of items in the list
-	int size(){
+	int size()
+	{
 		return length;
 	}
 };

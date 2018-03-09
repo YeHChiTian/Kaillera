@@ -47,6 +47,7 @@ public:
 		//to_string("put_data");
 	}
 	//将缓冲区buffer数据拷贝到datab中,大小为min(len, pos)
+	//成功返回实际拷贝长度，错误返回0
 	int peek_data(char * datab, int len)
 	{
 		int x;

@@ -21,21 +21,26 @@ extern odlist<char*> setting_motd;
 
 extern void __cdecl kprintf(char * arg_0, ...);
 
-class k_user {
+class k_user 
+{
 
 public:
+	//派生dlist
 	class k_userlist: public dlist<k_user*> 
 	{
 	public:
 		unsigned int time_;
 		void step();
+		//对所有游戏列表发送指令消息instr,（等于广播）
 		void send_instruction(k_instruction * instr);
+
 		int logged_in_users_count();
 		void write_login_success(k_message * pmsg);
 		k_user * find_user(unsigned short id_);
 	};
-	
-	class k_game {
+	//
+	class k_game 
+	{
 	public:
 		k_userlist players;
 		k_user * owner;
@@ -54,7 +59,8 @@ public:
 		bool remove_user(k_user * player);
 		bool step();
 	};
-	class k_gamelist: public dlist<k_game*, 32> {
+	class k_gamelist: public dlist<k_game*, 32> 
+	{
 	public:
 		void step();
 		int posof(k_game * game);
@@ -91,7 +97,7 @@ public:
 		int netsync_timeout_count;
 		unsigned int data_timeout_time;
 		int data_timeout_count;
-		unsigned int client_reply_frame;
+		unsigned int client_reply_frame;   
 		bool untrimmed_used_data;
 		k_user ();
 		~k_user();
@@ -99,7 +105,8 @@ public:
 		void send_instruction(k_instruction * inst);
 		bool step(unsigned int time_);
 
-		void start_game()	{
+		void start_game()
+		{
 			status = 2;
 			data_timeout_count = netsync_timeout_count = 0;
 			frame_size = -1;
@@ -108,30 +115,44 @@ public:
 			untrimmed_used_data = 0;
 			client_reply_frame = ((throughput + 1) * connection) - 1;
 			//send gamebegn to user
+
+			//写用户信息到k_instruction  kix
 			k_instruction kix;
 			kix.type = INSTRUCTION_GAMEBEGN;
 			kix.store_short(throughput);
 			kix.store_char(playerno);
 			kix.store_char(game->players.length);
+
+			//将kix的信息保存到sock中的out_cache
 			sock->send_instruction(&kix);
-			while (incoming_cache.length > 0){
+
+			//清空消息
+			while (incoming_cache.length > 0)
+			{
 				delete incoming_cache.get(0);
 				incoming_cache.remove(0);
 			}
-			while (incoming_cache.length > 0) {
+			while (incoming_cache.length > 0)
+			{
 				delete incoming_cache.get(0);
 				incoming_cache.remove(0);
 			}
 			another_working_frame.pos = working_frame.pos = 0;
 		}
-		void leave_game(){
-			if (game != 0 && gameslist.posof(game) != 0){
+		void leave_game()
+		{
+			if (game != 0 && gameslist.posof(game) != 0)
+			{
 				k_instruction kix;
 				kix.type = INSTRUCTION_GAMRLEAV;
 				kix.store_short(id);
 				kix.set_username(username);
+
+				//
 				game->players.send_instruction(&kix);
-				if (game->remove_user(this)){
+
+				if (game->remove_user(this))
+				{
 					kprintf("Closing game");
 					delete game;
 				}
@@ -139,8 +160,10 @@ public:
 			game = 0;
 			//login_timeout = userslist.time_ + 120000;
 		}
-		void drop_game(){
-			if (game != 0 && gameslist.posof(game) != 0){
+		void drop_game()
+		{
+			if (game != 0 && gameslist.posof(game) != 0)
+			{
 				k_instruction kix;
 				kix.type = INSTRUCTION_GAMRDROP;
 				kix.store_char(playerno);
@@ -150,10 +173,12 @@ public:
 				login_timeout = userslist.time_ + 120000;
 			}
 		}
-		bool has_data(){
+		bool has_data()
+		{
 			return (working_frame.pos > 0);
 		}
-		int peek_frame(char * buffer) {
+		int peek_frame(char * buffer)
+		{
 			return working_frame.peek_data(buffer, frame_size);
 		}
 		void send_data(char * frame_buf, int frame_len);

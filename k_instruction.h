@@ -64,8 +64,8 @@ typedef enum INSTRUCTION{
 class k_instruction 
 {
 public:
-	INSTRUCTION type: 8;
-    char user[32];
+	INSTRUCTION type: 8;   //指令类型
+    char user[32];         //用户名
 	char * buffer;
     unsigned int buffer_len;
     unsigned int buffer_pos;
@@ -105,13 +105,14 @@ public:
         strncpy(user, arg_0, (p=min((int)strlen(arg_0), 31)));
         user[p] = 0x00;
     }
+	//将arg_0内容加入到缓冲区buffer
     void store_bytes(const void * arg_0, int arg_4)
 	{
         ensure_sized(buffer_pos+arg_4);
         memcpy(buffer+buffer_pos, arg_0, arg_4);
         buffer_pos += arg_4;
     }
-	//从buffer中加载内容到arg_0,并且buffer自身减去arg0
+	//从buffer中加载内容到arg_0,并且buffer自身减去arg_4
     void load_bytes(void * arg_0, unsigned int arg_4)
 	{
         if (buffer_pos != 0) 
@@ -126,7 +127,8 @@ public:
 	{
         store_bytes(arg_0, (int)strlen(arg_0)+1);
     }
-    void load_str(char * arg_0, unsigned int arg_4){
+    void load_str(char * arg_0, unsigned int arg_4)
+	{
 		arg_4 = min(arg_4, strlen(buffer)+1);
         arg_4 = min(arg_4, buffer_pos+1);
 		load_bytes(arg_0, arg_4);
@@ -156,6 +158,7 @@ public:
         load_bytes(&x,1);
         return x;
     }
+	//加载2个字节的内容，
     short load_short()
 	{
         short x;
@@ -163,7 +166,8 @@ public:
         return x;
     }
 	//将type，user，buffer信息写入到arg_0, 然后返回实际写入的长度
-    int write_to_message(char * arg_0, const unsigned int max_len){
+    int write_to_message(char * arg_0, const unsigned int max_len)
+	{
         *arg_0 = type;
 		int eax = (int)strlen(user) + 2;
         strcpy(arg_0 + 1, user);
@@ -223,7 +227,8 @@ public:
 		sprintf(buf, "k_instruction {\n\ttype: %s;\n\tusername: %s;\n\tlen: %i;\n\tcontent:%s;\n};", INSTRUCTION_STR[type], user, buffer_len, xxx);
 		return buf;
 	}
-	void to_string(){
+	void to_string()
+	{
 		/*
 		char * INSTRUCTION_STR[] = {
 			MSTR(CLNTSKIP),

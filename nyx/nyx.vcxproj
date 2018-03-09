@@ -88,19 +88,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="..\dlist.nstl" />
-    <None Include="..\odlist.nstl" />
-    <None Include="..\oslist.nstl" />
-    <None Include="..\slist.nstl" />
-  </ItemGroup>
-  <ItemGroup>
+    <ClInclude Include="..\dlist.h" />
     <ClInclude Include="..\k_frame.h" />
     <ClInclude Include="..\k_instruction.h" />
     <ClInclude Include="..\k_message.h" />
     <ClInclude Include="..\k_socket.h" />
     <ClInclude Include="..\k_user.h" />
     <ClInclude Include="..\nSTL.h" />
+    <ClInclude Include="..\odlist.h" />
+    <ClInclude Include="..\oslist.h" />
     <ClInclude Include="..\settings.h" />
+    <ClInclude Include="..\slist.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\k_socket.cpp" />

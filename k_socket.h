@@ -153,56 +153,74 @@ public:
         memset(&addr, 0, 16);
         addr.sin_family = AF_INET;
         addr.sin_port = htons(hostshort);
-        if (addr.sin_port != 0) {
+        if (addr.sin_port != 0)
+		{
             addr.sin_addr.s_addr = inet_addr(cp);
-            if (addr.sin_addr.s_addr == -1) {
+            if (addr.sin_addr.s_addr == -1)
+			{
                 hostent * h = gethostbyname(cp);
-                if (h==0) {
+                if (h==0) 
+				{
                     return 1;
-                } else {
+                } 
+				else 
+				{
                     memcpy(&addr.sin_addr,&h->h_addr_list[0],h->h_length);
                 }
             }
             return 0;
-        } else return 1;
+        } 
+		else return 1;
     }
-    virtual void set_addr(sockaddr_in * arg_addr) {
+    virtual void set_addr(sockaddr_in * arg_addr)
+	{
         memcpy(&addr, arg_addr, sizeof(addr));
     }
-    virtual bool set_aport(int port){
+    virtual bool set_aport(int port)
+	{
         return ((addr.sin_port = htons(port)) != 0);
     }
     virtual bool send(char * buf, int len)
 	{
         return (sendto(sock, buf, len, 0, (sockaddr*)&addr, 16) == -1 );
     }
-    virtual int check_recv (char* buf, int * len, bool leave_in_queue, sockaddr_in* addrp)  {
+	//检测是否有数据接收，有的话数据来自addrp
+    virtual int check_recv (char* buf, int * len, bool leave_in_queue, sockaddr_in* addrp) 
+	{
         struct sockaddr saa;
         int V4 = sizeof(saa);
         has_data_waiting = 0;
         int  lenn = 0;
-        if ((lenn = recvfrom(sock, buf, *len, leave_in_queue? MSG_PEEK:0, &saa, & V4)) <= 0) {
+        if ((lenn = recvfrom(sock, buf, *len, leave_in_queue? MSG_PEEK:0, &saa, & V4)) <= 0)
+		{
             return 1;
-        } else {
+        } 
+		else
+		{
             *len = lenn;
-            if(lenn != 0) {
+            if(lenn != 0)
+			{
                 memcpy(addrp, &saa, sizeof(saa));
             }
             return 0;
         }
     }
-    virtual bool has_data(){
+    virtual bool has_data()
+	{
         return has_data_waiting;
     }
-    virtual int send_nothing(){
+    virtual int send_nothing()
+	{
         char buf[16];
         return sendto(sock, buf, 0, 0, (sockaddr*)&addr, sizeof(addr));
     }
-    virtual int get_port(){
+    virtual int get_port()
+	{
         return port;
     }
 	
-	char* to_string(char *buf){
+	char* to_string(char *buf)
+	{
 		sprintf(buf, "k_socket {\n\tsock: %u;\n\tport: %u;\n\thas_data: %i;\n};", sock, port, has_data_waiting);
 		return buf;
 	}

@@ -9,20 +9,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\dlist.nstl">
-      <Filter>nSTL</Filter>
-    </None>
-    <None Include="..\odlist.nstl">
-      <Filter>nSTL</Filter>
-    </None>
-    <None Include="..\oslist.nstl">
-      <Filter>nSTL</Filter>
-    </None>
-    <None Include="..\slist.nstl">
-      <Filter>nSTL</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\nSTL.h">
       <Filter>nSTL</Filter>
     </ClInclude>
@@ -42,6 +28,18 @@
       <Filter>Kaillera</Filter>
     </ClInclude>
     <ClInclude Include="..\settings.h" />
+    <ClInclude Include="..\dlist.h">
+      <Filter>nSTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\odlist.h">
+      <Filter>nSTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\oslist.h">
+      <Filter>nSTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\slist.h">
+      <Filter>nSTL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\k_socket.cpp">

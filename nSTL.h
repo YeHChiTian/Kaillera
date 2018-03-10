@@ -19,4 +19,5 @@
 //simple ordered dynamic list
 #include "odlist.h"
 
-hehe����
+heheÊÔÊÔ
+真的好累

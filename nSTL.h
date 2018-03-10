@@ -18,6 +18,4 @@
 
 //simple ordered dynamic list
 #include "odlist.h"
-
-
-呵呵试试
+真的是这样吗，

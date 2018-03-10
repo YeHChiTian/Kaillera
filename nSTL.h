@@ -18,4 +18,5 @@
 
 //simple ordered dynamic list
 #include "odlist.h"
-123456789
+12344
+5566

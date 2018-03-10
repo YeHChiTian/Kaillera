@@ -19,4 +19,4 @@
 //simple ordered dynamic list
 #include "odlist.h"
 
-//±àÂëGB2312
+//±àÂëGB231

@@ -10,7 +10,8 @@ public:
 	char * buffer;
 	int pos;
 	int size;
-	k_frame(){
+	k_frame()
+	{
 		pos = 0;
 		buffer = 0;
 		size = 0;

@@ -18,5 +18,3 @@
 
 //simple ordered dynamic list
 #include "odlist.h"
-
-//看看行不

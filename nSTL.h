@@ -18,7 +18,5 @@
 
 //simple ordered dynamic list
 #include "odlist.h"
-12344
-5566
 
-我真的很累
+//编码GB2312

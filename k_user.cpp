@@ -63,10 +63,13 @@ int k_user::get_port()
 {
 	return sock->get_port();
 }
+//将参数inst指令信息保存到sock中out_cache
 void k_user::send_instruction(k_instruction * inst)
 {
 	sock->send_instruction(inst);
 }
+
+//用户的一个动作
 bool k_user::step(unsigned int time_)
 {
 	if (sock->has_data())
@@ -175,7 +178,7 @@ bool k_user::step(unsigned int time_)
 						k_instruction kix;
 						kix.type = INSTRUCTION_SERVPING;
 						for (int x = 0; x < 4; x++) kix.store_int(x);
-						sock->send_instruction(&kix);
+							sock->send_instruction(&kix);
 						ping = time_;
 					}
 					break;
@@ -185,7 +188,8 @@ bool k_user::step(unsigned int time_)
 					ki.set_username(username);
 					userslist.send_instruction(& ki);
 					floodnb++;
-					if (floodtime + (var_setting_flood_msg_time * 1000) * 8 < time_) {
+					if (floodtime + (var_setting_flood_msg_time * 1000) * 8 < time_)
+					{
 						floodnb = 0;
 						floodtime = time_;
 					}
@@ -396,6 +400,8 @@ bool k_user::step(unsigned int time_)
 	}
 	return false;
 }
+
+//
 void k_user::k_gamelist::step()
 {
 	bool reiterate = true;
@@ -408,6 +414,7 @@ void k_user::k_gamelist::step()
 		}
 	}
 }
+//在game_list中寻找game  返回对应的编号
 int k_user::k_gamelist::posof(k_game * game)
 {
 	for (int i = 0; i < length; i++)
@@ -417,6 +424,7 @@ int k_user::k_gamelist::posof(k_game * game)
 	}
 	return 0;
 }
+//通过游戏_id寻找对应的游戏，找到返回对应的游戏，
 k_user::k_game * k_user::k_gamelist::find_game(unsigned int id_)
 {
 	k_game * game;
@@ -429,7 +437,7 @@ k_user::k_game * k_user::k_gamelist::find_game(unsigned int id_)
 }
 
 
-
+//所有用户user调用step(),如果返回真remove
 void k_user::k_userlist::step()
 {
 	if (length > 0)
@@ -447,18 +455,21 @@ void k_user::k_userlist::step()
 		}
 	}
 }
-
+//对所有用户广播指令instr
 void k_user::k_userlist::send_instruction(k_instruction * instr)
 {
 	if (length > 0) 
 	{
 		for (int x = 0; x < length; x++) 
 		{
+			//
 			get(x)->send_instruction(instr);
 		}
 	}
 }
-int k_user::k_userlist::logged_in_users_count(){
+//统计多少用户status！=0（应该是在线）
+int k_user::k_userlist::logged_in_users_count()
+{
 	int tt = 0;
 	if (length > 0 )
 	{
@@ -470,6 +481,7 @@ int k_user::k_userlist::logged_in_users_count(){
 	}
 	return tt;
 }
+//将登录成功的k_user信息保存到pmsg中
 void k_user::k_userlist::write_login_success(k_message * pmsg)
 {
 	k_instruction ki;
@@ -510,6 +522,7 @@ void k_user::k_userlist::write_login_success(k_message * pmsg)
 	pmsg->send_instruction(&ki);
 }
 
+//用过id_寻找响应的k_user,找到返回对应的k_user,否则返回0
 k_user * k_user::k_userlist::find_user(unsigned short id_)
 {
 	k_user * ku;
@@ -531,6 +544,7 @@ k_user::k_game::k_game(char * name_, k_user * owner_)
 	maxusers = 2;
 	id = game_id++;
 }
+//将user保存到players中，同时保存对应的广播对应的指令
 void k_user::k_game::add_user(k_user * user)
 {
 	players.add(user);	
@@ -543,7 +557,7 @@ void k_user::k_game::add_user(k_user * user)
 	kix.store_char(user->connection);
 	players.send_instruction(&kix);
 }
-
+//设置用户指令，广播下去
 void k_user::k_game::send_status_update()
 {
 	k_instruction kix;
@@ -554,6 +568,7 @@ void k_user::k_game::send_status_update()
 	kix.store_char(maxusers);
 	userslist.send_instruction(&kix);
 }
+//
 void k_user::k_game::write_GAMRSLST(k_message * pmsg)
 {
 	k_instruction kix;
@@ -569,6 +584,7 @@ void k_user::k_game::write_GAMRSLST(k_message * pmsg)
 	}
 	pmsg->send_instruction( & kix);
 }
+//开发游戏，对所有k_user->start_game(), 然后更新他们
 void k_user::k_game::start_game() {
 	status = 1;
 	frame_counter = 1;
@@ -580,6 +596,7 @@ void k_user::k_game::start_game() {
 	}
 	send_status_update();
 }
+//通过k_user删除对应的用户。
 bool k_user::k_game::remove_user(k_user * player)
 {
 	for (int i = 0; i < players.length; i++)
@@ -600,30 +617,38 @@ bool k_user::k_game::remove_user(k_user * player)
 		if (pos > 0)
 			gameslist.remove(pos-1);
 		k_user * ku;
-		for (int x = 0; x < userslist.length; x++) {
+		for (int x = 0; x < userslist.length; x++)
+		{
 			if ((ku=userslist.get(x))->game == this && ku != player)
 				ku->leave_game();
 			//	((ku=get(x))->game == 0)
 		}
 		return true;
-	} else {
+	}
+	else 
+	{
 		send_status_update();
 	}
 	return false;
 }
 
-bool k_user::k_game::step(){
+bool k_user::k_game::step()
+{
 	char  tmp_big_big_buffer[1024];
 	char  tmp_buffer[256];
-	if (status == 1) {
+	if (status == 1) 
+	{
 		bool all_ready = true;
-		if(players.length > 0) {
-			for (int eax = 0; eax < players.length && all_ready; eax++){
+		if(players.length > 0)
+		{
+			for (int eax = 0; eax < players.length && all_ready; eax++)
+			{
 				//if (players.get(eax)->player_ready == 0) {
 				all_ready = all_ready && players.get(eax)->player_ready;
 				//}
 			}
-			if(all_ready) {
+			if(all_ready)
+			{
 				kprintf("Got netsync from every game's player. Starting game.");
 				status = 2;
 				k_instruction kix;
@@ -631,56 +656,78 @@ bool k_user::k_game::step(){
 				players.send_instruction(&kix);
 			}
 		}
-	} else if (status == 2) {
+	}
+	else if (status == 2)
+	{
 		bool retval = false;
-		if (players.length == 0) {
+		if (players.length == 0) 
+		{
 			status = 0;
 			send_status_update();
 			return false;
 		}
 		bool nobodys_playing = true;
-		if (players.length > 0) {
-			for (int ecx = 0; ecx < players.length && (nobodys_playing != false); ecx++){
-				if(players.get(ecx)->status != 1) {
+		if (players.length > 0)
+		{
+			for (int ecx = 0; ecx < players.length && (nobodys_playing != false); ecx++)
+			{
+				if(players.get(ecx)->status != 1) 
+				{
 					nobodys_playing = false;
 				}
 			}
 		}
-		if(nobodys_playing == true) {
+		if(nobodys_playing == true)
+		{
 			status = 0;
 			send_status_update();
 			return false;
 		}
 		bool xrv = true;
-		if(players.length > 0) {
-			for (int index_ = 0; index_ < players.length; index_++) {
+		if(players.length > 0) 
+		{
+			for (int index_ = 0; index_ < players.length; index_++)
+			{
 				k_user * kusr = players.get(index_);
-				if(kusr->status == 2) {
-					if (kusr->client_reply_frame <= frame_counter && kusr->untrimmed_used_data == 0) {
-						if(kusr->has_data() == 0) {
+				if(kusr->status == 2)
+				{
+					if (kusr->client_reply_frame <= frame_counter && kusr->untrimmed_used_data == 0)
+					{
+						if(kusr->has_data() == 0) 
+						{
 							xrv = 0;
-						} else {
+						} 
+						else
+						{
 							memset(tmp_big_big_buffer, 0, 1024);
 							int framelen = -1;
 							bool skip = false;
 							bool pack_success = false;
-							if (players.length> 0) {
-								for (int i = 0; i < players.length; i++){
+							if (players.length> 0)
+							{
+								for (int i = 0; i < players.length; i++)
+								{
 									k_user * ku = players.get(i);
-									if(ku->status == 2) {
-										if(ku->client_reply_frame <= frame_counter) {
+									if(ku->status == 2)
+									{
+										if(ku->client_reply_frame <= frame_counter) 
+										{
 											if(ku->has_data() == 0) {
 												xrv = false;
 												skip = true;
 												break;
 											}
 											int len = ku->peek_frame(tmp_buffer);
-											if(len == 0) {
+											if(len == 0)
+											{
 												xrv = false;
 												skip = true;
 												break;
-											} else {
-												if(framelen == -1) {
+											}
+											else
+											{
+												if(framelen == -1)
+												{
 													framelen = len;
 												}
 												memcpy(&tmp_big_big_buffer[len * i], tmp_buffer, len);
@@ -691,7 +738,8 @@ bool k_user::k_game::step(){
 								}
 								if (skip)
 									continue;
-								if (pack_success) {
+								if (pack_success) 
+								{
 									kusr->send_data(tmp_big_big_buffer, players.length * framelen);
 									kusr->untrimmed_used_data = 1;
 								}
@@ -700,12 +748,16 @@ bool k_user::k_game::step(){
 					}
 				}
 			}
-			if(xrv != false) {
+			if(xrv != false)
+			{
 				frame_counter = frame_counter + 1;
-				if(players.length > 0) {
-					for (int edi = 0; edi < players.length; edi++){
+				if(players.length > 0) 
+				{
+					for (int edi = 0; edi < players.length; edi++)
+					{
 						k_user * kux = players.get(edi);
-						if (kux->untrimmed_used_data != 0) {
+						if (kux->untrimmed_used_data != 0)
+						{
 							kux->get_data(tmp_big_big_buffer);
 							retval = true;
 							kux->client_reply_frame++;
@@ -720,17 +772,23 @@ bool k_user::k_game::step(){
 	}
 	return false;
 }
-void k_user::send_data(char * frame_buf, int frame_len){
+void k_user::send_data(char * frame_buf, int frame_len)
+{
 	char  tmp_buffer[1024];
-	if (frame_len > 0) {
+	if (frame_len > 0)
+	{
 		another_working_frame.put_data(frame_buf, frame_len);
 	}
 	int reqlen = connection * frame_len;
-	if (another_working_frame.pos >= reqlen) {
-		if (outgoing_cache.length > 0) {
-			for (int i = 0; i > outgoing_cache.length; i++) {
+	if (another_working_frame.pos >= reqlen) 
+	{
+		if (outgoing_cache.length > 0)
+		{
+			for (int i = 0; i > outgoing_cache.length; i++) 
+			{
 				outgoing_cache.get(i)->peek_data(tmp_buffer, another_working_frame.pos);
-				if (memcmp(tmp_buffer, another_working_frame.buffer, another_working_frame.pos) == 0) {
+				if (memcmp(tmp_buffer, another_working_frame.buffer, another_working_frame.pos) == 0)
+				{
 					k_instruction kix;
 					kix.type = INSTRUCTION_GAMCDATA;
 					kix.store_char(another_working_frame.pos);
@@ -746,7 +804,8 @@ void k_user::send_data(char * frame_buf, int frame_len){
 		kix.store_short(another_working_frame.pos);
 		kix.store_bytes(tmp_buffer, reqlen);
 		sock->send_instruction(&kix);
-		if (outgoing_cache.length == 0x100) {
+		if (outgoing_cache.length == 0x100) 
+		{
 			delete outgoing_cache.get(0);
 			outgoing_cache.remove(0);
 		}
@@ -755,7 +814,8 @@ void k_user::send_data(char * frame_buf, int frame_len){
 		another_working_frame.pos = 0;
 	}
 }
-int k_user::get_data(char * datab)	{
+int k_user::get_data(char * datab)	
+{
 	int ret = working_frame.get_data(datab, frame_size);
 	return ret;
 }
